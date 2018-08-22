@@ -33,6 +33,7 @@ from zalgo_text import zalgo
 logging.basicConfig(level=logging.DEBUG)
 api_id=os.environ['API_KEY']
 api_hash=os.environ['API_HASH']
+SUDO_USERS=[518221376,538543304,423070089]
 global SPAM
 SPAM=False
 global ISAFK
@@ -177,6 +178,9 @@ async def thanos_to_rescue(event):
                          send_inline=True,
                          embed_links=True
                          )
+    if (await event.get_reply_message()).sender_id in SUDO_USERS:
+            await event.edit("`I am not supposed to ban a sudo user :/`")
+            return
     await event.edit("`Thanos snaps!`")
     time.sleep(5)
     await client(EditBannedRequest(event.chat_id,(await event.get_reply_message()).sender_id,rights))
@@ -194,6 +198,9 @@ async def spodoman(event):
                          send_inline=True,
                          embed_links=True
                          )
+    if (await event.get_reply_message()).sender_id in SUDO_USERS:
+            await e.edit("`I am not supposed to mute a sudo user!`")
+            return
     await event.edit("`Spiderman nabs him!`")
     time.sleep(5)
     await client(EditBannedRequest(event.chat_id,(await event.get_reply_message()).sender_id,rights))
