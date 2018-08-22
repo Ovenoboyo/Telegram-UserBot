@@ -11,6 +11,7 @@ from telethon.tl.functions.channels import EditAdminRequest
 from telethon.tl.types import ChannelAdminRights
 from datetime import datetime, timedelta
 import time
+import re
 import logging
 import random, re
 import asyncio
@@ -33,6 +34,7 @@ from zalgo_text import zalgo
 logging.basicConfig(level=logging.DEBUG)
 api_id=os.environ['API_KEY']
 api_hash=os.environ['API_HASH']
+text=" "
 SUDO_USERS=[518221376,538543304,423070089,234480941] #balaji, kratos, me, twit,
 langi="en-us"
 global SPAM
@@ -155,11 +157,6 @@ async def haste_paste(event):
     await event.edit('`Sending to bin . . .`')
     text=str(message[0].message[7:])
     await event.edit('`Sent to bin! Check it here: `' + hastebin.post(text))
-@client.on(events.NewMessage(incoming=True,pattern='.killme'))
-async def killmelol(event):
-    name = await client.get_entity(event.from_id)
-    name0 = str(name.first_name)
-    await event.reply('**K I L L  **[' + name0 + '](tg://user?id=' + str(event.from_id) + ')**\n\nP L E A S E\n\nE N D  T H E I R  S U F F E R I N G**')
 @client.on(events.NewMessage(outgoing=True,pattern='.rekt'))
 async def rekt(event):
     await event.edit("Get Rekt man! ( ͡° ͜ʖ ͡°)")
