@@ -33,7 +33,7 @@ from zalgo_text import zalgo
 logging.basicConfig(level=logging.DEBUG)
 api_id=os.environ['API_KEY']
 api_hash=os.environ['API_HASH']
-SUDO_USERS=[518221376,538543304,423070089]
+SUDO_USERS=[518221376,538543304,423070089,234480941] #balaji, kratos, me, twit,
 global SPAM
 SPAM=False
 global ISAFK
