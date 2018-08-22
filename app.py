@@ -138,9 +138,6 @@ async def spam_tracker(event):
 @client.on(events.NewMessage(outgoing=True,pattern='.shg'))
 async def shrug(event):
     await event.edit("¯\_(ツ)_/¯")
-@client.on(events.NewMessage(outgoing=True,pattern='hi'))
-async def hoi(event):
-    await event.edit("Hoi!😄")
 @client.on(events.NewMessage(outgoing=True,pattern='/get userbotfile'))
 async def userbot_sender(event):
     file=open(sys.argv[0], 'r')
