@@ -275,7 +275,7 @@ async def wiki(event):
         await client.send_message(-1001200493978,"Wiki query "+match+" was executed successfully")
 @client.on(events.NewMessage(outgoing=True, pattern='.iamafk'))
 async def set_afk(event):
-            message=await client.get_messages(event.chat_id)
+            message=await client.get_messages(event.chat_id, from_user='me')
             string = str(message[0].message[8:])
             global ISAFK
             global AFKREASON
@@ -355,7 +355,7 @@ async def pingme(event):
     await event.edit('Pong!\n%sms' % (ms))
 @client.on(events.NewMessage(outgoing=True, pattern='.spam'))
 async def spammer(event):
-    message= await client.get_messages(event.chat_id)
+    message= await client.get_messages(event.chat_id, from_user='me')
     counter=int(message[0].message[6:8])
     spam_message=str(event.text[8:])
     await asyncio.wait([event.respond(spam_message) for i in range(counter)])
@@ -373,7 +373,7 @@ async def help(event):
     await event.reply('https://github.com/baalajimaestro/Telegram-UserBot/blob/master/README.md')
 @client.on(events.NewMessage(outgoing=True, pattern='.bigspam'))
 async def bigspam(event):
-    message = await client.get_messages(event.chat_id)
+    message = await client.get_messages(event.chat_id, from_user='me')
     counter=int(message[0].message[9:13])
     spam_message=str(event.text[13:])
     for i in range (1,counter):
