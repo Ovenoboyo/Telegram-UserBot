@@ -34,6 +34,7 @@ logging.basicConfig(level=logging.DEBUG)
 api_id=os.environ['API_KEY']
 api_hash=os.environ['API_HASH']
 SUDO_USERS=[518221376,538543304,423070089,234480941] #balaji, kratos, me, twit,
+langi="en-us"
 global SPAM
 SPAM=False
 global ISAFK
@@ -182,7 +183,7 @@ async def thanos_to_rescue(event):
     time.sleep(5)
     await client(EditBannedRequest(event.chat_id,(await event.get_reply_message()).sender_id,rights))
     await event.edit("When I’m done, half of humanity will still exist. Perfectly balanced, as all things should be. I hope they remember you.")
-@client.on(events.NewMessage(outgoing=True,pattern='.spider'))
+@client.on(events.NewMessage(outgoing=True,pattern='.mute'))
 async def spodoman(event):
     rights = ChannelBannedRights(
                          until_date=None,
@@ -198,10 +199,10 @@ async def spodoman(event):
     if (await event.get_reply_message()).sender_id in SUDO_USERS:
             await e.edit("`I am not supposed to mute a sudo user!`")
             return
-    await event.edit("`Spiderman nabs him!`")
+    await event.edit("`Muting....`")
     time.sleep(5)
     await client(EditBannedRequest(event.chat_id,(await event.get_reply_message()).sender_id,rights))
-    await event.edit("I missed the part, that's my problem.")
+    await event.edit("And..... fock off")
 
 @client.on(events.NewMessage(incoming=True))
 async def mention_afk(event):
@@ -215,7 +216,7 @@ async def mention_afk(event):
               if (await event.get_sender()).username not in USERS:
                   USERS.update({(await event.get_sender()).username:1})
                   COUNT_MSG=COUNT_MSG+1
-                  await event.reply("AFK AF `"+AFKREASON+"`Spam me if you want me to notice you")
+                  await event.reply("AFK AF. Reason:`"+AFKREASON+"` Spam me if you want me to notice you")
                   time.sleep(10)
                   i=1
                   async for message in client.iter_messages(event.chat_id,from_user='me'):
@@ -230,11 +231,11 @@ async def mention_afk(event):
                      if textx:
                          message = textx
                          text = str(message.message)
-                         await event.reply("AFK AF `"+AFKREASON+"`Spam me if you want me to notice you")
+                         await event.reply("AFK AF.  Reason: `"+AFKREASON+"` Spam me if you want me to notice you")
             else:
                   USERS.update({event.chat_id:1})
                   COUNT_MSG=COUNT_MSG+1
-                  await event.reply("AFK AF `"+AFKREASON+"`Spam me if you want me to notice you")
+                  await event.reply("AFK AF.  Reason: `"+AFKREASON+"` Spam me if you want me to notice you")
                   time.sleep(10)
                   i=1
                   async for message in client.iter_messages(event.chat_id,from_user='me'):
@@ -262,7 +263,7 @@ async def editme(event):
             break
         i=i+1
     await client.send_message(-1001200493978,"Edit query was executed successfully")
-@client.on(events.NewMessage(outgoing=True,pattern=r'.google (.*)'))
+@client.on(events.NewMessage(pattern=r'.google (.*)'))
 async def gsearch(event):
         match = event.pattern_match.group(1)
         result_=subprocess.run(['gsearch', match], stdout=subprocess.PIPE)
@@ -427,7 +428,7 @@ async def afk_on_pm(event):
               if (await event.get_sender()).username not in USERS:
                   USERS.update({(await event.get_sender()).username:1})
                   COUNT_MSG=COUNT_MSG+1
-                  await event.reply("AFK AF `"+AFKREASON+"`Spam me if you want me to notice you")
+                  await event.reply("AFK AF Reason:`"+AFKREASON+"` Spam me if you want me to notice you")
                   time.sleep(10)
                   i=1
                   async for message in client.iter_messages(event.chat_id,from_user='me'):
@@ -442,11 +443,11 @@ async def afk_on_pm(event):
                      if textx:
                          message = textx
                          text = str(message.message)
-                         await event.reply("AFK AF `"+AFKREASON+"`Spam me if you want me to notice you")
+                         await event.reply("AFK AF Reason:`"+AFKREASON+"` Spam me if you want me to notice you")
             else:
                   USERS.update({event.chat_id:1})
                   COUNT_MSG=COUNT_MSG+1
-                  await event.reply("AFK AF `"+AFKREASON+"`Spam me if you want me to notice you")
+                  await event.reply("AFK AF Reason: `"+AFKREASON+"` Spam me if you want me to notice you")
                   time.sleep(10)
                   i=1
                   async for message in client.iter_messages(event.chat_id,from_user='me'):
@@ -602,6 +603,12 @@ async def ud(event):
     await client.send_message(-1001200493978,"ud query "+str+" executed successfully.")
   else:
     await event.edit("No result found for **"+str+"**")
+@client.on(events.NewMessage(pattern='.lang'))
+async def lang(event):
+     global langi
+     message=await client.get_messages(event.chat_id)
+     langi = str(message[0].message[6:])
+     await event.edit("tts language changed to **"+langi+"**")
 @client.on(events.NewMessage(pattern='.tts'))
 async def tts(event):
     textx=await event.get_reply_message()
@@ -612,14 +619,13 @@ async def tts(event):
     else:
         replye = str(replye[0].message[5:])
     current_time = datetime.strftime(datetime.now(), "%d.%m.%Y %H:%M:%S")
-    lang="en-us"
+    lang = langi
     tts = gTTS(replye, lang)
     tts.save("k.mp3")
     with open("k.mp3", "rb") as f:
         linelist = list(f)
         linecount = len(linelist)
-    if linecount == 1:
-        lang = "en-us"                           #tts on personal chats is broken
+    if linecount == 1:                         #tts on personal chats is broken
         tts = gTTS(replyes, lang)
         tts.save("k.mp3")
     with open("k.mp3", "r") as speech:
