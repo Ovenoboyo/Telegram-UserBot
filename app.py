@@ -230,7 +230,7 @@ async def mention_afk(event):
             else:
                   USERS.update({event.chat_id:1})
                   COUNT_MSG=COUNT_MSG+1
-                  await event.reply("AFK AF `"+AFKREASON+"` Spam me if you want me to notice you")
+                  await event.reply("AFK AF `"+AFKREASON+"`Spam me if you want me to notice you")
                   time.sleep(10)
                   i=1
                   async for message in client.iter_messages(event.chat_id,from_user='me'):
@@ -438,7 +438,7 @@ async def afk_on_pm(event):
                      if textx:
                          message = textx
                          text = str(message.message)
-                         await event.reply("Bot is down. A better version of it, must be up now!")
+                         await event.reply("AFK AF `"+AFKREASON+"`Spam me if you want me to notice you")
             else:
                   USERS.update({event.chat_id:1})
                   COUNT_MSG=COUNT_MSG+1
@@ -532,7 +532,7 @@ async def vapor(event):
 @client.on(events.NewMessage(outgoing=True, pattern=':/'))
 async def dopedance(event):
     uio=['/','\\']
-    for i in range (1,15):
+    for i in range (1,30):
         time.sleep(0.3)
         await event.edit(':'+uio[i%2])
 @client.on(events.NewMessage(outgoing=True, pattern='-_-'))
@@ -540,7 +540,7 @@ async def mutemeow(event):
     await event.delete()
     t = '-_-'
     r = await event.reply(t)
-    for j in range(10):
+    for j in range(30):
         t = t[:-1] + '_-'
         await r.edit(t)
 @client.on(events.NewMessage(outgoing=True, pattern='.react'))
@@ -588,7 +588,7 @@ async def selfdestruct(event):
         i=i+1
         await message.delete()
         await client.send_message(-1001200493978,"sd query done successfully")
-@client.on(events.NewMessage(outgoing=True, pattern='^.ud (.*)'))
+@client.on(events.NewMessage(pattern='^.ud (.*)'))
 async def ud(event):
   await event.edit("Processing...")
   str = event.pattern_match.group(1)
@@ -598,7 +598,7 @@ async def ud(event):
     await client.send_message(-1001200493978,"ud query "+str+" executed successfully.")
   else:
     await event.edit("No result found for **"+str+"**")
-@client.on(events.NewMessage(outgoing=True, pattern='.tts'))
+@client.on(events.NewMessage(pattern='.tts'))
 async def tts(event):
     textx=await event.get_reply_message()
     replye = await client.get_messages(event.chat_id)
@@ -608,18 +608,18 @@ async def tts(event):
     else:
         replye = str(replye[0].message[5:])
     current_time = datetime.strftime(datetime.now(), "%d.%m.%Y %H:%M:%S")
-    lang="ja"                                 #KAWAIIII gtts -
+    lang="en-us"
     tts = gTTS(replye, lang)
     tts.save("k.mp3")
     with open("k.mp3", "rb") as f:
         linelist = list(f)
         linecount = len(linelist)
     if linecount == 1:
-        lang = "ja"                           #tts on personal chats is broken, use .pingme before tts on personal chats
+        lang = "en-us"                           #tts on personal chats is broken
         tts = gTTS(replyes, lang)
         tts.save("k.mp3")
     with open("k.mp3", "r") as speech:
-        await client.send_file(event.chat_id, 'k.mp3', voice_note=True)
+        await client.send_file(event.chat_id, 'k.mp3', reply_to=event.id, voice_note=True)
         os.remove("k.mp3")
 @client.on(events.NewMessage(outgoing=True, pattern='.restart'))
 async def reboot(event):
