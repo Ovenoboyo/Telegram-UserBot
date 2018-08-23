@@ -378,6 +378,7 @@ async def bigspam(event):
     spam_message=str(event.text[13:])
     for i in range (1,counter):
        await event.respond(spam_message)
+       time.sleep(0.8)
     await event.delete()
     await client.send_message(-1001200493978,"bigspam was executed successfully")
 @client.on(events.NewMessage(outgoing=True, pattern='.speed'))
