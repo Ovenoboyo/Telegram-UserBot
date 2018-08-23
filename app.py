@@ -72,7 +72,7 @@ async def log(event):
     else:
         message = await client.get_messages(event.chat_id)
         message = str(message[0].message[4:])
-    await client.send_message(-1001200493978,message)
+    await client.send_message(-266765687,message)
     await event.edit("`Logged Successfully`")
 @client.on(events.NewMessage(outgoing=True, pattern='.term'))
 async def terminal_runner(event):
@@ -93,7 +93,7 @@ async def purgeme(event):
         i=i+1
         await message.delete()
     await client.send_message(event.chat_id,"`Purge Complete!` Purged "+str(count)+" messages. **This auto-generated message shall be self destructed in 2 seconds.**")
-    await client.send_message(-1001200493978,"Purge of "+str(count)+" messages done successfully.")
+    await client.send_message(-266765687,"Purge of "+str(count)+" messages done successfully.")
     time.sleep(2)
     i=1
     async for message in client.iter_messages(event.chat_id,from_user='me'):
@@ -199,7 +199,7 @@ async def spodoman(event):
     await event.edit("`Muting....`")
     time.sleep(5)
     await client(EditBannedRequest(event.chat_id,(await event.get_reply_message()).sender_id,rights))
-    await event.edit("And..... fock off")
+    await event.edit("`And..... fock off`")
 
 @client.on(events.NewMessage(incoming=True))
 async def mention_afk(event):
@@ -378,7 +378,7 @@ async def bigspam(event):
     spam_message=str(event.text[13:])
     for i in range (1,counter):
        await event.respond(spam_message)
-       time.sleep(0.8)
+       time.sleep(0.4)
     await event.delete()
     await client.send_message(-266765687,"bigspam was executed successfully")
 @client.on(events.NewMessage(outgoing=True, pattern='.speed'))
@@ -604,11 +604,11 @@ async def ud(event):
 @client.on(events.NewMessage(pattern='.lang'))
 async def lang(event):
      global langi
-     message=await client.get_messages(event.chat_id)
+     message=await client.get_messages(event.chat_id, from_user='me')
      langi = str(message[0].message[6:])
      await event.edit("tts language changed to **"+langi+"**")
      await client.send_message(-266765687,"tts language changed to: `"+langi+"`")
-@client.on(events.NewMessage(pattern='.tts'))
+@client.on(events.NewMessage(outgoing=True, pattern='.tts'))
 async def tts(event):
     textx=await event.get_reply_message()
     replye = await client.get_messages(event.chat_id)
