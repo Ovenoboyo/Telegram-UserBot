@@ -295,7 +295,7 @@ async def zal(event):
      input_text = " ".join(message).lower()
      zalgofied_text = zalgo.zalgo().zalgofy(input_text)
      await event.edit(zalgofied_text)
-@client.on(events.NewMessage(outgoing=True,pattern='.wizard'))
+@client.on(events.NewMessage(outgoing=True,pattern='.promod'))
 async def wizard(event):
     rights = ChannelAdminRights(
     add_admins=True,
@@ -306,10 +306,10 @@ async def wizard(event):
     pin_messages=True,
     invite_link=True,
     )
-    await event.edit("`Wizard waves his wand!`")
+    await event.edit("`ke ._.`")
     time.sleep(3)
     await client(EditAdminRequest(event.chat_id,(await event.get_reply_message()).sender_id,rights))
-    await event.edit("A perfect magic has happened!")
+    await event.edit("`Now fock off`")
 @client.on(events.NewMessage(outgoing=True, pattern='.asmon'))
 async def set_asm(event):
             global SPAM
