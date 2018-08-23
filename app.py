@@ -628,9 +628,8 @@ async def tts(event):
     with open("k.mp3", "r") as speech:
         await client.send_file(event.chat_id, 'k.mp3', reply_to=event.id, voice_note=True)
         os.remove("k.mp3")
-@client.on(events.NewMessage(outgoing=True, pattern='.restart'))
-async def reboot(event):
-    await event.edit("`Thank You master! I am taking a break!`")
+@client.on(events.NewMessage(outgoing=True, pattern='.stop'))
+async def stop(event):
     os.execl(sys.executable, sys.executable, *sys.argv)
 if len(sys.argv) < 2:
     client.run_until_disconnected()
