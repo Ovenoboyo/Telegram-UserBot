@@ -46,10 +46,6 @@ AFKREASON="No Reason"
 global USERS
 USERS={}
 global COUNT_MSG
-global SPAM_ALLOWANCE
-SPAM_ALLOWANCE=3
-global MUTING_USERS
-MUTING_USERS={}
 COUNT_MSG=0
 WIDE_MAP = dict((i, i + 0xFEE0) for i in range(0x21, 0x7F))
 WIDE_MAP[0x20] = 0x3000
@@ -101,43 +97,6 @@ async def purgeme(event):
             break
         i=i+1
         await message.delete()
-@client.on(events.NewMessage(incoming=True))
-async def spam_tracker(event):
-    global SPAM
-    global MUTING_USERS
-    global SPAM_ALLOWANCE
-    if SPAM:
-        if event.sender_id not in MUTING_USERS:
-                  MUTING_USERS={}
-                  MUTING_USERS.update({event.sender_id:1})
-        if event.sender_id in MUTING_USERS:
-                     MUTING_USERS[event.sender_id]=MUTING_USERS[event.sender_id]+1
-                     if MUTING_USERS[event.sender_id]>SPAM_ALLOWANCE:
-                         rights = ChannelBannedRights(
-                         until_date=datetime.now() + timedelta(days=2),
-                         send_messages=True,
-                         send_media=True,
-                         send_stickers=True,
-                         send_gifs=True,
-                         send_games=True,
-                         send_inline=True,
-                         embed_links=True
-                         )
-                         if event.chat_id > 0:
-                             await client.send_message(event.chat_id,"`Boss! I am not trained to deal with people spamming on PM.\n I request to take action with **Report Spam** button`")
-                             return
-                         try:
-                           await client(EditBannedRequest(event.chat_id,event.sender_id,rights))
-                         except UserAdminInvalidError:
-                           await client.send_message(event.chat_id,"`I'll catch you soon spammer! Now you escaped. `")
-                           return
-                         except ChatAdminRequiredError:
-                           await client.send_message(event.chat_id,"`Me nu admeme to catch spammer nibba`")
-                           return
-                         except ChannelInvalidError:
-                           await client.send_message(event.chat_id,"`User retarded af ._.`")
-                           return
-                         await client.send_message(event.chat_id,"`Get rekt nibba. I am ze anti-spam lord "+str(event.sender_id)+" was muted.`")
 @client.on(events.NewMessage(outgoing=True,pattern='.shg'))
 async def shrug(event):
     await event.edit("¯\_(ツ)_/¯")
@@ -146,11 +105,6 @@ async def userbot_sender(event):
     file=open(sys.argv[0], 'r')
     await client.send_file(event.chat_id, sys.argv[0], reply_to=event.id, caption='`Here\'s me in a file`')
     file.close()
-@client.on(events.NewMessage(pattern='.pip (.+)'))
-async def pipcheck(event):
-	a=await event.reply('`Searching . . .`')
-	r='`' + subprocess.run(['pip', 'search', e.pattern_match.group(1)], stdout=subprocess.PIPE).stdout.decode() + '`'
-	await a.edit(r)
 @client.on(events.NewMessage(outgoing=True,pattern='.paste'))
 async def haste_paste(event):
     message=await client.get_messages(event.chat_id)
@@ -310,19 +264,6 @@ async def wizard(event):
     time.sleep(3)
     await client(EditAdminRequest(event.chat_id,(await event.get_reply_message()).sender_id,rights))
     await event.edit("`Now fock off`")
-@client.on(events.NewMessage(outgoing=True, pattern='.asmon'))
-async def set_asm(event):
-            global SPAM
-            global SPAM_ALLOWANCE
-            SPAM=True
-            message=await client.get_messages(event.chat_id)
-            SPAM_ALLOWANCE=int(message[0].message[6:])
-            await event.edit("Spam Tracking turned on!")
-@client.on(events.NewMessage(outgoing=True, pattern='.asmoff'))
-async def set_asm_off(event):
-            global SPAM
-            SPAM=False
-            await event.edit("Spam Tracking turned off!")
 @client.on(events.NewMessage(outgoing=True, pattern='.eval'))
 async def evaluate(event):
     evaluation = eval(event.text[6:])
