@@ -349,6 +349,20 @@ async def stretch(event):
     count = random.randint(3, 10)
     reply_text = re.sub(r'([aeiouAEIOUａｅｉｏｕＡＥＩＯＵ])', (r'\1' * count), message)
     await event.edit(reply_text)
+@client.on(events.NewMessage(pattern='.random'))
+async def randomevents(event):
+    textx=await event.get_reply_message()
+    message = await client.get_messages(event.chat_id)
+    if textx:
+         message = textx
+         temp = str(message)
+    else:
+         temp = str(message[0].message[8:])
+    array = temp.split(",")
+    count = int(len(array)) -1
+    chosen = random.randint(0, count)
+    await client.send_message(event.chat_id, "Random event: `"+array[chosen]+"`", reply_to=event.id)
+    await client.send_message(-266765687,".random function initiated at ID: `"+str(event.chat_id)+"`, Selected option was `"+array[chosen]+"`")
 @client.on(events.NewMessage(incoming=True))
 async def afk_on_pm(event):
     global ISAFK
