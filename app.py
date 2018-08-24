@@ -349,6 +349,30 @@ async def stretch(event):
     count = random.randint(3, 10)
     reply_text = re.sub(r'([aeiouAEIOUａｅｉｏｕＡＥＩＯＵ])', (r'\1' * count), message)
     await event.edit(reply_text)
+@client.on(events.NewMessage(outgoing=True, pattern='.rmfilters'))
+async def filters(event):
+    message=await event.get_reply_message()
+    temp = str(message)
+    array = temp.split("\\n - ")
+    i = 1
+    count = int(len(array))
+    last = count -1
+    while i < count:
+        await client.send_message(event.chat_id,"/stop "+array[i]+"")
+        i = i+1
+        time.sleep(0.3)
+        if i==last:
+            temp1 = str(array[last])
+            temp2= temp1.split("'")
+            await client.send_message(event.chat_id,"/stop "+str(temp2[0])+"")
+            break
+    time.sleep(2)
+    j=1
+    async for message in client.iter_messages(event.chat_id,from_user='me'):
+        if j>count:
+            break
+        j=j+1
+        await message.delete()
 @client.on(events.NewMessage(pattern='.random'))
 async def randomevents(event):
     textx=await event.get_reply_message()
