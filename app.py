@@ -10,6 +10,7 @@ from telethon.errors import ChannelInvalidError
 from telethon.tl.functions.channels import EditAdminRequest
 from telethon.tl.types import ChannelAdminRights
 from datetime import datetime, timedelta
+import sqlite3
 import time
 import re
 import logging
@@ -51,6 +52,12 @@ WIDE_MAP = dict((i, i + 0xFEE0) for i in range(0x21, 0x7F))
 WIDE_MAP[0x20] = 0x3000
 client = TelegramClient('session_name', api_id, api_hash).start()
 client.start()
+if not os.path.exists('count.db'):
+     db= sqlite3.connect("count.db")
+     cursor=db.cursor()
+     cursor.execute('''CREATE TABLE LMAO(chat_id INTEGER, count INTEGER)''')
+     db.commit()
+     db.close()
 @client.on(events.NewMessage(outgoing=True, pattern='.delmsg'))
 async def delmsg(event):
     i=1
@@ -604,6 +611,28 @@ async def tts(event):
         await client.send_file(event.chat_id, 'k.mp3', reply_to=event.id, voice_note=True)
         os.remove("k.mp3")
     await client.send_message(-266765687,"tts executed successfully for query: `"+replye+"`")
+@client.on(events.NewMessage())
+async def lmao(event):
+     global count
+     count = 0
+     message=event.text.split()
+     ID = event.sender_id
+     db=sqlite3.connect("count.db")
+     cursor=db.cursor()
+     all_rows = cursor.fetchall()
+     cursor.execute('''SELECT * FROM LMAO''')
+     if "lmao" in message:
+         for row in all_rows:
+             await client.send_message(-266765687,"entered 2nd nest")  #didnt get here
+             if int(row[0]) == int(ID):
+                 count = row[1] +1
+             else:
+                 await client.send_message(-266765687,"Count not fetched") 
+                 count = count + 1
+             cursor.execute('''INSERT INTO LMAO VALUES(?,?)''', (int(ID),count))
+             db.commit()
+             await event.edit("```lmao count: ```"+str(count))
+             db.close()
 @client.on(events.NewMessage(outgoing=True, pattern='.stop'))
 async def stop(event):
     os.execl(sys.executable, sys.executable, *sys.argv)
