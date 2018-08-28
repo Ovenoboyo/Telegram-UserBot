@@ -53,11 +53,14 @@ WIDE_MAP[0x20] = 0x3000
 client = TelegramClient('session_name', api_id, api_hash).start()
 client.start()
 if not os.path.exists('count.db'):
-     db= sqlite3.connect("count.db")
-     cursor=db.cursor()
-     cursor.execute('''CREATE TABLE LMAO(chat_id INTEGER, count INTEGER)''')
-     db.commit()
-     db.close()
+    conn = sqlite3.connect('count.db')
+    conn.execute('''CREATE TABLE LMAO
+                    (ID     INT,
+                     COUNT1  INT);''')
+    cursor_cre=conn.cursor()
+    cursor_cre.execute('''INSERT INTO LMAO VALUES(?,?)''', (1,2))
+    conn.commit()
+    conn.close()
 @client.on(events.NewMessage(outgoing=True, pattern='.delmsg'))
 async def delmsg(event):
     i=1
@@ -573,11 +576,10 @@ async def selfdestruct(event):
         await client.send_message(-266765687,"sd query done successfully")
 @client.on(events.NewMessage(pattern='^.ud (.*)'))
 async def ud(event):
-  await event.edit("Processing...")
   str = event.pattern_match.group(1)
   mean = urbandict.define(str)
   if len(mean) >= 0:
-    await event.edit('Text: **'+str+'**\n\nMeaning: **'+mean[0]['def']+'**\n\n'+'Example: \n__'+mean[0]['example']+'__')
+    await client.send_message(await client.get_input_entity(event.chat_id), 'Text: **'+str+'**\n\nMeaning: **'+mean[0]['def']+'**\n\n'+'Example: \n__'+mean[0]['example']+'__', reply_to=event.id)
     await client.send_message(-266765687,"ud query "+str+" executed successfully.")
   else:
     await event.edit("No result found for **"+str+"**")
@@ -611,28 +613,44 @@ async def tts(event):
         await client.send_file(event.chat_id, 'k.mp3', reply_to=event.id, voice_note=True)
         os.remove("k.mp3")
     await client.send_message(-266765687,"tts executed successfully for query: `"+replye+"`")
-@client.on(events.NewMessage())
-async def lmao(event):
-     global count
-     count = 0
-     message=event.text.split()
-     ID = event.sender_id
-     db=sqlite3.connect("count.db")
-     cursor=db.cursor()
-     all_rows = cursor.fetchall()
-     cursor.execute('''SELECT * FROM LMAO''')
-     if "lmao" in message:
-         for row in all_rows:
-             await client.send_message(-266765687,"entered 2nd nest")  #didnt get here
-             if int(row[0]) == int(ID):
-                 count = row[1] +1
-             else:
-                 await client.send_message(-266765687,"Count not fetched") 
-                 count = count + 1
-             cursor.execute('''INSERT INTO LMAO VALUES(?,?)''', (int(ID),count))
-             db.commit()
-             await event.edit("```lmao count: ```"+str(count))
-             db.close()
+#@client.on(events.NewMessage())
+#async def lmao(event):
+#    ID1 = int(event.sender_id)
+#    count = 0
+#    kek = event.text
+#    message = kek.split()
+#    conn = sqlite3.connect('count.db')
+#    cursor_lmao=conn.cursor()
+#    cursor_lmao.execute("SELECT ID, COUNT1 from LMAO") 
+#    conn.commit()
+#    all_rows = cursor_lmao.fetchall()
+#    if "lmao" in message:
+#         for row in all_rows:
+#             if int(row[0]) == ID1:
+#                 count = int(row[1]) + 1
+#    if count == 0:
+#         count = count + 1
+#         cursor_lmao.execute('''INSERT INTO LMAO VALUES(?,?)''', (ID1 ,count))
+#         conn.commit()
+#    cursor_lmao.execute("UPDATE LMAO SET COUNT1='count' where ID = 'ID1'")
+#    conn.commit()
+#    await client.send_message(event.chat_id, "```lmao count: ```"+str(count))
+#    conn.close()
+@client.on(events.NewMessage(outgoing=True, pattern='.zucc'))
+async def zucc(event):
+    with open('zucc.txt', 'r') as f:
+        content = f.readlines()
+    content = content[0].rstrip()
+    with open(str(content), 'r') as zucc:
+        await event.edit("```Uploading```")
+        await client.send_file(event.chat_id, content)
+    await client.send_message(-266765687,str(content)+" uploaded to "+str(event.sender_id))
+    await client.send_message(event.chat_id, "Straight through my bot ;)")
+@client.on(events.NewMessage(pattern='List of notes in Vince - OFFICIAL:'))
+async def vince_del(event):
+    time.sleep(10)
+    await event.delete()
+    await client.send_message(-266765687, "Deleted /notes in Vince official ID: "+str(event.chat_id))
 @client.on(events.NewMessage(outgoing=True, pattern='.stop'))
 async def stop(event):
     os.execl(sys.executable, sys.executable, *sys.argv)
