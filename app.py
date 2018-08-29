@@ -17,6 +17,7 @@ import logging
 import random, re
 import asyncio
 import os
+import pyfiglet
 from gtts import gTTS
 import time
 import hastebin
@@ -651,6 +652,13 @@ async def vince_del(event):
     time.sleep(10)
     await event.delete()
     await client.send_message(-266765687, "Deleted /notes in Vince official ID: "+str(event.chat_id))
+@client.on(events.NewMessage(outgoing=True, pattern='.figlet'))
+async def figlet(event):
+    text= event.text
+    text = text[8:]
+    if text != '':
+        res = pyfiglet.figlet_format(text)
+        await event.edit(str(res))
 @client.on(events.NewMessage(outgoing=True, pattern='.stop'))
 async def stop(event):
     os.execl(sys.executable, sys.executable, *sys.argv)
