@@ -17,7 +17,7 @@ import logging
 import random, re
 import asyncio
 import os
-import pyfiglet
+from pyfiglet import Figlet
 from gtts import gTTS
 import time
 import hastebin
@@ -225,13 +225,13 @@ async def editme(event):
             break
         i=i+1
     await client.send_message(-266765687,"Edit query was executed successfully")
-@client.on(events.NewMessage(pattern=r'.google (.*)'))
+@client.on(events.NewMessage(outgoing=True , pattern='.google (.*)'))
 async def gsearch(event):
         match = event.pattern_match.group(1)
         result_=subprocess.run(['gsearch', match], stdout=subprocess.PIPE)
         result=str(result_.stdout.decode())
         await client.send_message(await client.get_input_entity(event.chat_id), message='**Search Query:**\n`' + match + '`\n\n**Result:**\n' + result, reply_to=event.id, link_preview=False)
-        await client.send_message(-266765687,"Google Search query "+match+" was executed successfully")
+        await client.send_message(-266765687,"Google Search query "+match+" was executed successfully by "+str(event.sender_id))
 @client.on(events.NewMessage(outgoing=True,pattern=r'.wiki (.*)'))
 async def wiki(event):
         match = event.pattern_match.group(1)
@@ -344,10 +344,10 @@ async def translateme(event):
     else:
         text = str(message[0].message[4:])
     reply_text=translator.translate(text, dest='en').text
-    reply_text="`Source: `\n"+text+"`Translation: `\n"+reply_text
+    reply_text="`Source: `\n"+text+"\n `Translation: `\n"+reply_text
     await client.send_message(event.chat_id,reply_text)
     await event.delete()
-    await client.send_message(-266765687,"Translate query "+message+" was executed successfully")
+    await client.send_message(-266765687,"Translate query "+str(text)+" was executed successfully")
 @client.on(events.NewMessage(outgoing=True, pattern='.str'))
 async def stretch(event):
     textx=await event.get_reply_message()
@@ -575,13 +575,13 @@ async def selfdestruct(event):
         i=i+1
         await message.delete()
         await client.send_message(-266765687,"sd query done successfully")
-@client.on(events.NewMessage(pattern='^.ud (.*)'))
+@client.on(events.NewMessage(incoming=True, pattern='ud (.*)'))
 async def ud(event):
-  str = event.pattern_match.group(1)
-  mean = urbandict.define(str)
+  string = event.pattern_match.group(1)
+  mean = urbandict.define(string)
   if len(mean) >= 0:
-    await client.send_message(await client.get_input_entity(event.chat_id), 'Text: **'+str+'**\n\nMeaning: **'+mean[0]['def']+'**\n\n'+'Example: \n__'+mean[0]['example']+'__', reply_to=event.id)
-    await client.send_message(-266765687,"ud query "+str+" executed successfully.")
+    await client.send_message(await client.get_input_entity(event.chat_id), 'Text: **'+string+'**\n\nMeaning: **'+mean[0]['def']+'**\n\n'+'Example: \n__'+mean[0]['example']+'__', reply_to=event.id)
+    await client.send_message(-266765687,"ud query "+string+" executed successfully by "+str(event.sender_id))
   else:
     await event.edit("No result found for **"+str+"**")
 @client.on(events.NewMessage(pattern='.lang'))
@@ -646,19 +646,19 @@ async def zucc(event):
         await event.edit("```Uploading```")
         await client.send_file(event.chat_id, content)
     await client.send_message(-266765687,str(content)+" uploaded to "+str(event.sender_id))
-    await client.send_message(event.chat_id, "Straight through my bot ;)")
 @client.on(events.NewMessage(pattern='List of notes in Vince - OFFICIAL:'))
 async def vince_del(event):
     time.sleep(10)
     await event.delete()
     await client.send_message(-266765687, "Deleted /notes in Vince official ID: "+str(event.chat_id))
 @client.on(events.NewMessage(outgoing=True, pattern='.figlet'))
-async def figlet(event):
+async def fglet(event):
     text= event.text
     text = text[8:]
-    if text != '':
-        res = pyfiglet.figlet_format(text)
-        await event.edit(str(res))
+    f = Figlet(font='letters')
+    art = f.renderText(text)
+    print (art)
+    await client.send_message(event.chat_id, ""+art)
 @client.on(events.NewMessage(outgoing=True, pattern='.stop'))
 async def stop(event):
     os.execl(sys.executable, sys.executable, *sys.argv)
