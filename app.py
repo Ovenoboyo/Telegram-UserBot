@@ -1,8 +1,8 @@
-
 # -*- coding: utf-8 -*-
 from telethon import TelegramClient, events
 from async_generator import aclosing
 from telethon.tl.functions.channels import EditBannedRequest
+from telethon.tl.custom import Button
 from telethon.tl.types import ChannelBannedRights
 from telethon.errors import UserAdminInvalidError
 from telethon.errors import ChatAdminRequiredError
@@ -10,6 +10,8 @@ from telethon.errors import ChannelInvalidError
 from telethon.tl.functions.channels import EditAdminRequest
 from telethon.tl.types import ChannelAdminRights
 from datetime import datetime, timedelta
+from googletrans import Translator
+import logging
 import sqlite3
 import time
 import re
@@ -37,14 +39,9 @@ logging.basicConfig(level=logging.DEBUG)
 api_id=os.environ['API_KEY']
 api_hash=os.environ['API_HASH']
 text=" "
-SUDO_USERS=[518221376,538543304,423070089,234480941] #balaji, kratos, me, twit,
 langi="en-us"
 global SPAM
 SPAM=False
-global ISAFK
-ISAFK=False
-global AFKREASON
-AFKREASON="No Reason"
 global USERS
 USERS={}
 global COUNT_MSG
@@ -53,15 +50,6 @@ WIDE_MAP = dict((i, i + 0xFEE0) for i in range(0x21, 0x7F))
 WIDE_MAP[0x20] = 0x3000
 client = TelegramClient('session_name', api_id, api_hash).start()
 client.start()
-if not os.path.exists('count.db'):
-    conn = sqlite3.connect('count.db')
-    conn.execute('''CREATE TABLE LMAO
-                    (ID     INT,
-                     COUNT1  INT);''')
-    cursor_cre=conn.cursor()
-    cursor_cre.execute('''INSERT INTO LMAO VALUES(?,?)''', (1,2))
-    conn.commit()
-    conn.close()
 @client.on(events.NewMessage(outgoing=True, pattern='.delmsg'))
 async def delmsg(event):
     i=1
@@ -70,17 +58,6 @@ async def delmsg(event):
             break
         i=i+1
         await message.delete()
-@client.on(events.NewMessage(outgoing=True, pattern='.log'))
-async def log(event):
-    textx=await event.get_reply_message()
-    if textx:
-         message = textx
-         message = str(message.message)
-    else:
-        message = await client.get_messages(event.chat_id)
-        message = str(message[0].message[4:])
-    await client.send_message(-266765687,message)
-    await event.edit("`Logged Successfully`")
 @client.on(events.NewMessage(outgoing=True, pattern='.term'))
 async def terminal_runner(event):
     message=await client.get_messages(event.chat_id)
@@ -116,115 +93,9 @@ async def userbot_sender(event):
     file=open(sys.argv[0], 'r')
     await client.send_file(event.chat_id, sys.argv[0], reply_to=event.id, caption='`Here\'s me in a file`')
     file.close()
-@client.on(events.NewMessage(outgoing=True,pattern='.paste'))
-async def haste_paste(event):
-    message=await client.get_messages(event.chat_id)
-    await event.edit('`Sending to bin . . .`')
-    text=str(message[0].message[7:])
-    await event.edit('`Sent to bin! Check it here: `' + hastebin.post(text))
 @client.on(events.NewMessage(outgoing=True,pattern='.rekt'))
 async def rekt(event):
     await event.edit("Get Rekt man! ( ͡° ͜ʖ ͡°)")
-@client.on(events.NewMessage(outgoing=True,pattern='.thanos'))
-async def thanos_to_rescue(event):
-    rights = ChannelBannedRights(
-                         until_date=None,
-                         view_messages=True,
-                         send_messages=True,
-                         send_media=True,
-                         send_stickers=True,
-                         send_gifs=True,
-                         send_games=True,
-                         send_inline=True,
-                         embed_links=True
-                         )
-    if (await event.get_reply_message()).sender_id in SUDO_USERS:
-            await event.edit("`I am not supposed to ban a sudo user :/`")
-            return
-    await event.edit("`Thanos snaps!`")
-    time.sleep(5)
-    await client(EditBannedRequest(event.chat_id,(await event.get_reply_message()).sender_id,rights))
-    await event.edit("When I’m done, half of humanity will still exist. Perfectly balanced, as all things should be. I hope they remember you.")
-@client.on(events.NewMessage(outgoing=True,pattern='.mute'))
-async def spodoman(event):
-    rights = ChannelBannedRights(
-                         until_date=None,
-                         view_messages=None,
-                         send_messages=True,
-                         send_media=True,
-                         send_stickers=True,
-                         send_gifs=True,
-                         send_games=True,
-                         send_inline=True,
-                         embed_links=True
-                         )
-    if (await event.get_reply_message()).sender_id in SUDO_USERS:
-            await e.edit("`I am not supposed to mute a sudo user!`")
-            return
-    await event.edit("`Muting....`")
-    time.sleep(5)
-    await client(EditBannedRequest(event.chat_id,(await event.get_reply_message()).sender_id,rights))
-    await event.edit("`And..... fock off`")
-
-@client.on(events.NewMessage(incoming=True))
-async def mention_afk(event):
-    global COUNT_MSG
-    global USERS
-    global ISAFK
-    global AFKREASON
-    if event.message.mentioned:
-        if ISAFK:
-            if (await event.get_sender()):
-              if (await event.get_sender()).username not in USERS:
-                  USERS.update({(await event.get_sender()).username:1})
-                  COUNT_MSG=COUNT_MSG+1
-                  await event.reply("AFK AF. Reason:`"+AFKREASON+"` Spam me if you want me to notice you")
-                  time.sleep(10)
-                  i=1
-                  async for message in client.iter_messages(event.chat_id,from_user='me'):
-                    if i>1:
-                        break
-                    i=i+1
-                    await message.delete()
-              elif (await event.get_sender()).username in USERS:
-                     USERS[(await event.get_sender()).username]=USERS[(await event.get_sender()).username]+1
-                     COUNT_MSG=COUNT_MSG+1
-                     textx=await event.get_reply_message()
-                     if textx:
-                         message = textx
-                         text = str(message.message)
-                         await event.reply("AFK AF.  Reason: `"+AFKREASON+"` Spam me if you want me to notice you")
-            else:
-                  USERS.update({event.chat_id:1})
-                  COUNT_MSG=COUNT_MSG+1
-                  await event.reply("AFK AF.  Reason: `"+AFKREASON+"` Spam me if you want me to notice you")
-                  time.sleep(10)
-                  i=1
-                  async for message in client.iter_messages(event.chat_id,from_user='me'):
-                        if i>1:
-                           break
-                        i=i+1
-                        await message.delete()
-                  if event.chat_id in USERS:
-                     USERS[event.chat_id]=USERS[event.chat_id]+1
-                     COUNT_MSG=COUNT_MSG+1
-                     textx=await event.get_reply_message()
-                     if textx:
-                         message = textx
-                         text = str(message.message)
-                         await event.reply("Lmao bot dead")
-@client.on(events.NewMessage(outgoing=True, pattern='.editme'))
-async def editme(event):
-    message=await client.get_messages(event.chat_id)
-    string = str(message[0].message[8:])
-    i=1
-    async for message in client.iter_messages(event.chat_id,from_user='me'):
-        if i==2:
-            await message.edit(string)
-            await event.delete()
-            break
-        i=i+1
-    await client.send_message(-266765687,"Edit query was executed successfully")
 @client.on(events.NewMessage(outgoing=True , pattern='.google (.*)'))
 async def gsearch(event):
         match = event.pattern_match.group(1)
@@ -238,43 +109,6 @@ async def wiki(event):
         result=wikipedia.summary(match)
         await client.send_message(await client.get_input_entity(event.chat_id), message='**Search:**\n`' + match + '`\n\n**Result:**\n' + result, reply_to=event.id, link_preview=False)
         await client.send_message(-266765687,"Wiki query "+match+" was executed successfully")
-@client.on(events.NewMessage(outgoing=True, pattern='.iamafk'))
-async def set_afk(event):
-            message=await client.get_messages(event.chat_id, from_user='me')
-            string = str(message[0].message[8:])
-            global ISAFK
-            global AFKREASON
-            ISAFK=True
-            await event.edit("AFK AF!")
-            if string!="":
-                AFKREASON=string
-@client.on(events.NewMessage(outgoing=True, pattern='.zal'))
-async def zal(event):
-     textx=await event.get_reply_message()
-     message = await client.get_messages(event.chat_id)
-     if textx:
-         message = textx
-         message = str(message.message)
-     else:
-        message = str(message[0].message[4:])
-     input_text = " ".join(message).lower()
-     zalgofied_text = zalgo.zalgo().zalgofy(input_text)
-     await event.edit(zalgofied_text)
-@client.on(events.NewMessage(outgoing=True,pattern='.promod'))
-async def wizard(event):
-    rights = ChannelAdminRights(
-    add_admins=True,
-    invite_users=True,
-    change_info=True,
-    ban_users=True,
-    delete_messages=True,
-    pin_messages=True,
-    invite_link=True,
-    )
-    await event.edit("`ke ._.`")
-    time.sleep(3)
-    await client(EditAdminRequest(event.chat_id,(await event.get_reply_message()).sender_id,rights))
-    await event.edit("`Now fock off`")
 @client.on(events.NewMessage(outgoing=True, pattern='.eval'))
 async def evaluate(event):
     evaluation = eval(event.text[6:])
@@ -333,21 +167,6 @@ async def bigspam(event):
        time.sleep(0.4)
     await event.delete()
     await client.send_message(-266765687,"bigspam was executed successfully")
-@client.on(events.NewMessage(outgoing=True, pattern='.trt'))
-async def translateme(event):
-    translator=Translator()
-    textx=await event.get_reply_message()
-    message = await client.get_messages(event.chat_id)
-    if textx:
-         message = textx
-         text = str(message.message)
-    else:
-        text = str(message[0].message[4:])
-    reply_text=translator.translate(text, dest='en').text
-    reply_text="`Source: `\n"+text+"\n `Translation: `\n"+reply_text
-    await client.send_message(event.chat_id,reply_text)
-    await event.delete()
-    await client.send_message(-266765687,"Translate query "+str(text)+" was executed successfully")
 @client.on(events.NewMessage(outgoing=True, pattern='.str'))
 async def stretch(event):
     textx=await event.get_reply_message()
@@ -398,53 +217,6 @@ async def randomevents(event):
     chosen = random.randint(0, count)
     await client.send_message(event.chat_id, "Random event: `"+array[chosen]+"`", reply_to=event.id)
     await client.send_message(-266765687,".random function initiated at ID: `"+str(event.chat_id)+"`, Selected option was `"+array[chosen]+"`")
-@client.on(events.NewMessage(incoming=True))
-async def afk_on_pm(event):
-    global ISAFK
-    global USERS
-    global COUNT_MSG
-    global AFKREASON
-    if event.is_private:
-        if ISAFK:
-            if (await event.get_sender()):
-              if (await event.get_sender()).username not in USERS:
-                  USERS.update({(await event.get_sender()).username:1})
-                  COUNT_MSG=COUNT_MSG+1
-                  await event.reply("AFK AF Reason:`"+AFKREASON+"` Spam me if you want me to notice you")
-                  time.sleep(10)
-                  i=1
-                  async for message in client.iter_messages(event.chat_id,from_user='me'):
-                    if i>1:
-                        break
-                    i=i+1
-                    await message.delete()
-              elif (await event.get_sender()).username in USERS:
-                     USERS[(await event.get_sender()).username]=USERS[(await event.get_sender()).username]+1
-                     COUNT_MSG=COUNT_MSG+1
-                     textx=await event.get_reply_message()
-                     if textx:
-                         message = textx
-                         text = str(message.message)
-                         await event.reply("AFK AF Reason:`"+AFKREASON+"` Spam me if you want me to notice you")
-            else:
-                  USERS.update({event.chat_id:1})
-                  COUNT_MSG=COUNT_MSG+1
-                  await event.reply("AFK AF Reason: `"+AFKREASON+"` Spam me if you want me to notice you")
-                  time.sleep(10)
-                  i=1
-                  async for message in client.iter_messages(event.chat_id,from_user='me'):
-                        if i>1:
-                           break
-                        i=i+1
-                        await message.delete()
-                  if event.chat_id in USERS:
-                     USERS[event.chat_id]=USERS[event.chat_id]+1
-                     COUNT_MSG=COUNT_MSG+1
-                     textx=await event.get_reply_message()
-                     if textx:
-                         message = textx
-                         text = str(message.message)
-                         await event.reply("Dead")
 @client.on(events.NewMessage(outgoing=True, pattern='.cp'))
 async def copypasta(event):
     textx=await event.get_reply_message()
@@ -472,35 +244,6 @@ async def copypasta(event):
                 reply_text += c.lower()
     reply_text += random.choice(emojis)
     await event.edit(reply_text)
-@client.on(events.NewMessage(outgoing=True, pattern='.notafk'))
-async def not_afk(event):
-            global ISAFK
-            global COUNT_MSG
-            global USERS
-            global AFKREASON
-            ISAFK=False
-            await event.edit("I have returned from AFK mode.")
-            await event.respond("`You had recieved "+str(COUNT_MSG)+" messages while you were away. Check log for more details. This auto-generated message shall be self destructed in 2 seconds.`")
-            time.sleep(2)
-            i=1
-            async for message in client.iter_messages(event.chat_id,from_user='me'):
-                if i>1:
-                    break
-                i=i+1
-                await message.delete()
-            await client.send_message(-266765687,"You had recieved "+str(COUNT_MSG)+" messages from "+str(len(USERS))+" chats while you were away")
-            for i in USERS:
-                await client.send_message(-266765687,str(i)+" sent you "+"`"+str(USERS[i])+" messages`")
-            COUNT_MSG=0
-            USERS={}
-            AFKREASON="No reason"
-@client.on(events.NewMessage(outgoing=True, pattern='.runs'))
-async def react(event):
-    reactor=['Runs to Modi for Help','Runs to Donald Trumpet for help','Runs to Kaala','Runs to Thanos','Runs far, far away from earth','Running faster than usian bolt coz I\'mma Bot','Runs to Marie']
-    index=randint(0,len(reactor)-1)
-    reply_text=reactor[index]
-    await event.edit(reply_text)
-    await client.send_message(-266765687,"You ran away from a cancerous chat")
 @client.on(events.NewMessage(outgoing=True, pattern='.vapor'))
 async def vapor(event):
     textx=await event.get_reply_message()
@@ -549,8 +292,8 @@ async def fastpurge(event):
             await client.delete_messages(chat, msgs)
             msgs = []
    if msgs:
-    await client.delete_messages(chat, msgs)
-   await client.send_message(event.chat_id,"`Fast Purge Complete!\n`Purged "+str(count)+" messages. **This auto-generated message shall be self destructed in 2 seconds.**")
+       await client.delete_messages(chat, msgs)
+   await client.send_message(event.chat_id,"`Fast Purge Complete!\n`Purged "+str(count)+" messages.")
    await client.send_message(-266765687,"Purge of "+str(count)+" messages done successfully.")
    time.sleep(2)
    i=1
@@ -559,84 +302,6 @@ async def fastpurge(event):
             break
         i=i+1
         await message.delete()
-@client.on(events.NewMessage(outgoing=True, pattern='.sd'))
-async def selfdestruct(event):
-    message=await client.get_messages(event.chat_id)
-    counter=int(message[0].message[4:6])
-    text=str(event.text[6:])
-    text=text+"`This message shall be self-destructed in "+str(counter)+" seconds`"
-    await event.delete()
-    await client.send_message(event.chat_id,text)
-    time.sleep(counter)
-    i=1
-    async for message in client.iter_messages(event.chat_id,from_user='me'):
-        if i>1:
-            break
-        i=i+1
-        await message.delete()
-        await client.send_message(-266765687,"sd query done successfully")
-@client.on(events.NewMessage(incoming=True, pattern='ud (.*)'))
-async def ud(event):
-  string = event.pattern_match.group(1)
-  mean = urbandict.define(string)
-  if len(mean) >= 0:
-    await client.send_message(await client.get_input_entity(event.chat_id), 'Text: **'+string+'**\n\nMeaning: **'+mean[0]['def']+'**\n\n'+'Example: \n__'+mean[0]['example']+'__', reply_to=event.id)
-    await client.send_message(-266765687,"ud query "+string+" executed successfully by "+str(event.sender_id))
-  else:
-    await event.edit("No result found for **"+str+"**")
-@client.on(events.NewMessage(pattern='.lang'))
-async def lang(event):
-     global langi
-     message=await client.get_messages(event.chat_id, from_user='me')
-     langi = str(message[0].message[6:])
-     await event.edit("tts language changed to **"+langi+"**")
-     await client.send_message(-266765687,"tts language changed to: `"+langi+"`")
-@client.on(events.NewMessage(outgoing=True, pattern='.tts'))
-async def tts(event):
-    textx=await event.get_reply_message()
-    replye = await client.get_messages(event.chat_id)
-    if textx:
-         replye = await event.get_reply_message()
-         replye = str(replye.message)
-    else:
-        replye = str(replye[0].message[5:])
-    current_time = datetime.strftime(datetime.now(), "%d.%m.%Y %H:%M:%S")
-    lang = langi
-    tts = gTTS(replye, lang)
-    tts.save("k.mp3")
-    with open("k.mp3", "rb") as f:
-        linelist = list(f)
-        linecount = len(linelist)
-    if linecount == 1:                         #tts on personal chats is broken
-        tts = gTTS(replyes, lang)
-        tts.save("k.mp3")
-    with open("k.mp3", "r") as speech:
-        await client.send_file(event.chat_id, 'k.mp3', reply_to=event.id, voice_note=True)
-        os.remove("k.mp3")
-    await client.send_message(-266765687,"tts executed successfully for query: `"+replye+"`")
-#@client.on(events.NewMessage())
-#async def lmao(event):
-#    ID1 = int(event.sender_id)
-#    count = 0
-#    kek = event.text
-#    message = kek.split()
-#    conn = sqlite3.connect('count.db')
-#    cursor_lmao=conn.cursor()
-#    cursor_lmao.execute("SELECT ID, COUNT1 from LMAO") 
-#    conn.commit()
-#    all_rows = cursor_lmao.fetchall()
-#    if "lmao" in message:
-#         for row in all_rows:
-#             if int(row[0]) == ID1:
-#                 count = int(row[1]) + 1
-#    if count == 0:
-#         count = count + 1
-#         cursor_lmao.execute('''INSERT INTO LMAO VALUES(?,?)''', (ID1 ,count))
-#         conn.commit()
-#    cursor_lmao.execute("UPDATE LMAO SET COUNT1='count' where ID = 'ID1'")
-#    conn.commit()
-#    await client.send_message(event.chat_id, "```lmao count: ```"+str(count))
-#    conn.close()
 @client.on(events.NewMessage(outgoing=True, pattern='.zucc'))
 async def zucc(event):
     with open('zucc.txt', 'r') as f:
@@ -646,19 +311,6 @@ async def zucc(event):
         await event.edit("```Uploading```")
         await client.send_file(event.chat_id, content)
     await client.send_message(-266765687,str(content)+" uploaded to "+str(event.sender_id))
-@client.on(events.NewMessage(pattern='List of notes in Vince - OFFICIAL:'))
-async def vince_del(event):
-    time.sleep(10)
-    await event.delete()
-    await client.send_message(-266765687, "Deleted /notes in Vince official ID: "+str(event.chat_id))
-@client.on(events.NewMessage(outgoing=True, pattern='.figlet'))
-async def fglet(event):
-    text= event.text
-    text = text[8:]
-    f = Figlet(font='letters')
-    art = f.renderText(text)
-    print (art)
-    await client.send_message(event.chat_id, ""+art)
 @client.on(events.NewMessage(outgoing=True, pattern='.stop'))
 async def stop(event):
     os.execl(sys.executable, sys.executable, *sys.argv)
