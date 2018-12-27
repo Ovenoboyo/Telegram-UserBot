@@ -36,8 +36,8 @@ from googletrans import Translator
 from random import randint
 from zalgo_text import zalgo
 logging.basicConfig(level=logging.DEBUG)
-api_id=os.environ['API_KEY']
-api_hash=os.environ['API_HASH']
+API_ID="oopsie"
+API_HASH="doopsie"
 text=" "
 langi="en-us"
 global SPAM
@@ -48,7 +48,7 @@ global COUNT_MSG
 COUNT_MSG=0
 WIDE_MAP = dict((i, i + 0xFEE0) for i in range(0x21, 0x7F))
 WIDE_MAP[0x20] = 0x3000
-client = TelegramClient('session_name', api_id, api_hash).start()
+client = TelegramClient('session_name', API_ID, API_HASH).start()
 client.start()
 @client.on(events.NewMessage(outgoing=True, pattern='.delmsg'))
 async def delmsg(event):
@@ -154,9 +154,6 @@ async def killdabot(event):
         await event.reply('`Goodbye (*Windows XP showdown sound*....`')
         time.sleep(2)
         time.sleep(counter)
-@client.on(events.NewMessage(outgoing=True, pattern='.help'))
-async def help(event):
-    await event.reply('https://github.com/baalajimaestro/Telegram-UserBot/blob/master/README.md')
 @client.on(events.NewMessage(outgoing=True, pattern='.bigspam'))
 async def bigspam(event):
     message = await client.get_messages(event.chat_id, from_user='me')
@@ -265,6 +262,18 @@ async def dopedance(event):
     for i in range (1,30):
         time.sleep(0.3)
         await event.edit(':'+uio[i%2])
+@client.on(events.NewMessage(outgoing=True, pattern='.getmeongithub'))
+async def github(event):
+    await event.edit('https://github.com/Ovenoboyo/Telegram-UserBot')
+@client.on(events.NewMessage(outgoing=True, pattern='.-.'))
+async def kek(event):
+    uio = '._.'
+    for i in range (1,30):
+        time.sleep(0.3)
+        await event.edit(uio)
+        time.sleep(0.3)
+        await event.edit('.-.')
+    await event.edit(uio)
 @client.on(events.NewMessage(outgoing=True, pattern='-_-'))
 async def mutemeow(event):
     await event.delete()
@@ -273,6 +282,7 @@ async def mutemeow(event):
     for j in range(30):
         t = t[:-1] + '_-'
         await r.edit(t)
+    await r.edit('-_-')
 @client.on(events.NewMessage(outgoing=True, pattern='.react'))
 async def react(event):
     reactor=['ʘ‿ʘ','ヾ(-_- )ゞ','(っ˘ڡ˘ς)','(´ж｀ς)','( ಠ ʖ̯ ಠ)','(° ͜ʖ͡°)╭∩╮','(ᵟຶ︵ ᵟຶ)','(งツ)ว','ʚ(•｀','(っ▀¯▀)つ','(◠﹏◠)','( ͡ಠ ʖ̯ ͡ಠ)','( ఠ ͟ʖ ఠ)','(∩｀-´)⊃━☆ﾟ.*･｡ﾟ','(⊃｡•́‿•̀｡)⊃','(._.)','{•̃_•̃}','(ᵔᴥᵔ)','♨_♨','⥀.⥀','ح˚௰˚づ ','(҂◡_◡)','ƪ(ړײ)‎ƪ​​','(っ•́｡•́)♪♬','◖ᵔᴥᵔ◗ ♪ ♫ ','(☞ﾟヮﾟ)☞','[¬º-°]¬','(Ծ‸ Ծ)','(•̀ᴗ•́)و ̑̑','ヾ(´〇`)ﾉ♪♪♪','(ง\'̀-\'́)ง','ლ(•́•́ლ)','ʕ •́؈•̀ ₎','♪♪ ヽ(ˇ∀ˇ )ゞ','щ（ﾟДﾟщ）','( ˇ෴ˇ )','눈_눈','(๑•́ ₃ •̀๑) ','( ˘ ³˘)♥ ','ԅ(≖‿≖ԅ)','♥‿♥','◔_◔','⁽⁽ଘ( ˊᵕˋ )ଓ⁾⁾','乁( ◔ ౪◔)「      ┑(￣Д ￣)┍','( ఠൠఠ )ﾉ','٩(๏_๏)۶','┌(ㆆ㉨ㆆ)ʃ','ఠ_ఠ','(づ｡◕‿‿◕｡)づ','(ノಠ ∩ಠ)ノ彡( \\o°o)\\','“ヽ(´▽｀)ノ”','༼ ༎ຶ ෴ ༎ຶ༽','｡ﾟ( ﾟஇ‸இﾟ)ﾟ｡','(づ￣ ³￣)づ','(⊙.☉)7','ᕕ( ᐛ )ᕗ','t(-_-t)','(ಥ⌣ಥ)','ヽ༼ ಠ益ಠ ༽ﾉ','༼∵༽ ༼⍨༽ ༼⍢༽ ༼⍤༽','ミ●﹏☉ミ','(⊙_◎)','¿ⓧ_ⓧﮌ','ಠ_ಠ','(´･_･`)','ᕦ(ò_óˇ)ᕤ','⊙﹏⊙','(╯°□°）╯︵ ┻━┻','¯\_(⊙︿⊙)_/¯','٩◔̯◔۶','°‿‿°','ᕙ(⇀‸↼‶)ᕗ','⊂(◉‿◉)つ','V•ᴥ•V','q(❂‿❂)p','ಥ_ಥ','ฅ^•ﻌ•^ฅ','ಥ﹏ಥ','（ ^_^）o自自o（^_^ ）','ಠ‿ಠ','ヽ(´▽`)/','ᵒᴥᵒ#','( ͡° ͜ʖ ͡°)','┬─┬﻿ ノ( ゜-゜ノ)','ヽ(´ー｀)ノ','☜(⌒▽⌒)☞','ε=ε=ε=┌(;*´Д`)ﾉ','(╬ ಠ益ಠ)','┬─┬⃰͡ (ᵔᵕᵔ͜ )','┻━┻ ︵ヽ(`Д´)ﾉ︵﻿ ┻━┻','¯\_(ツ)_/¯','ʕᵔᴥᵔʔ','(`･ω･´)','ʕ•ᴥ•ʔ','ლ(｀ー´ლ)','ʕʘ̅͜ʘ̅ʔ','（　ﾟДﾟ）','¯\(°_o)/¯','(｡◕‿◕｡)']
@@ -311,6 +321,11 @@ async def zucc(event):
         await event.edit("```Uploading```")
         await client.send_file(event.chat_id, content)
     await client.send_message(-266765687,str(content)+" uploaded to "+str(event.sender_id))
+@client.on(events.NewMessage(pattern='List of notes in Vince - OFFICIAL:'))
+async def vince_del(event):
+    time.sleep(10)
+    await event.delete()
+    await client.send_message(-266765687, "Deleted /notes in Vince official ID: "+str(event.chat_id))
 @client.on(events.NewMessage(outgoing=True, pattern='.stop'))
 async def stop(event):
     os.execl(sys.executable, sys.executable, *sys.argv)
